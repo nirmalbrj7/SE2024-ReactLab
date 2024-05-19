@@ -1,71 +1,177 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Software Engineering - 2024 Lab 2
 
-## Available Scripts
+## To-Do App with React
 
-In the project directory, you can run:
+## Set Up Your React Project
 
-### `npm start`
+### Install Node.js
+Make sure you have Node.js installed. You can download it from [Node.js official website](https://nodejs.org/).
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Create a React App
+Open your terminal and run:
+```bash
+npx create-react-app todo-app
+cd todo-app
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Project Structure
 
-### `npm test`
+- `node_modules/`: contains all your project's dependencies.
+- `public/`: static files like `index.html` where your React app is injected.
+- `src/`: your React components and code.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
+## Start Project
+Start the development server:
+```bash
+npm start
+```
+This will open your new React app in the browser at [http://localhost:3000](http://localhost:3000).
 
 
-https://create-react-app.dev/docs/deployment/
+### Remove unnecessary files
 
-### `npm run build` fails to minify
+* Delete everything in `src` except `index.js` and `App.js`.
+* Remove Unnecessary imports from Index.js (like index.css and reportwebVitols) 
+* Modify `App.js` to a simple functional component:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```jsx
+import React from 'react';
+
+const App = () => {
+  return (
+    <div>
+      <h1>To-Do App</h1>
+    </div>
+  );
+}
+
+export default App;
+```
+
+### Create Components
+Create components: `TodoList`, `TodoItem`, and `TodoForm`.
+
+#### TodoList Component
+`src/components/TodoList.js`
+```jsx
+import React from 'react';
+import TodoItem from './TodoItem';
+
+const TodoList = ({ todos, toggleComplete, deleteTodo }) => {
+  return (
+    <ul>
+      {todos.map(todo => (
+        <TodoItem 
+          key={todo.id} 
+          todo={todo} 
+          toggleComplete={toggleComplete}
+          deleteTodo={deleteTodo}
+        />
+      ))}
+    </ul>
+  );
+}
+
+export default TodoList;
+```
+
+#### TodoItem Component
+`src/components/TodoItem.js`
+```jsx
+import React from 'react';
+
+const TodoItem = ({ todo, toggleComplete, deleteTodo }) => {
+  return (
+    <li style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}>
+      <span onClick={() => toggleComplete(todo.id)}>{todo.text}</span>
+      <button onClick={() => deleteTodo(todo.id)}>Delete</button>
+    </li>
+  );
+}
+
+export default TodoItem;
+```
+
+#### TodoForm Component
+`src/components/TodoForm.js`
+```jsx
+import React, { useState } from 'react';
+
+const TodoForm = ({ addTodo }) => {
+  const [inputValue, setInputValue] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    addTodo(inputValue);
+    setInputValue('');
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input 
+        type="text" 
+        value={inputValue} 
+        onChange={(e) => setInputValue(e.target.value)}
+      />
+      <button type="submit">Add</button>
+    </form>
+  );
+}
+
+export default TodoForm;
+```
+
+### Update `App.js` to use new added components
+`src/App.js`
+```jsx
+import React, { useState } from 'react';
+import TodoList from './components/TodoList';
+import TodoForm from './components/TodoForm';
+
+const App = () => {
+  const [todos, setTodos] = useState([]);
+
+  const addTodo = text => {
+    const newTodo = { id: Date.now(), text, completed: false };
+    setTodos([ ...todos, newTodo ]);
+  };
+
+  const toggleComplete = id => {
+    setTodos(todos.map(todo =>
+      todo.id === id ? { ...todo, completed: !todo.completed } : todo
+    ));
+  };
+
+  const deleteTodo = id => {
+    setTodos(todos.filter(todo => todo.id !== id));
+  };
+
+  return (
+    <div>
+      <h1>To-Do App</h1>
+      <TodoForm addTodo={addTodo} />
+      <TodoList 
+        todos={todos} 
+        toggleComplete={toggleComplete} 
+        deleteTodo={deleteTodo} 
+      />
+    </div>
+  );
+}
+
+export default App;
+```
+
+Build for Production
+To build your app for production, run:
+```bash
+npm run build
+```
+This creates an optimized build of your app in the `build` folder, ready for deployment.
+
+Follow [Deploy React App](https://create-react-app.dev/docs/deployment/) for more
+
+_Note : if build file does not run on local server try putting `"homepage": ".",` on **package.json** file_
+
+
